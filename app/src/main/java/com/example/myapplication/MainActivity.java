@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -38,40 +39,11 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog.Builder ad;
     Context context;
     Location loc = null;
-    String locationForEPI;
     double latitude, longitude;//for changed place
-    double last_lat, last_lng;//for data at begins
+    CityPreference cityPreference;//at begin for default settings
     Handler handler;
     TextView tempToday, temp1, temp2, temp3, temp4, temp5, temp6;
     String tempStyle = "metric";//по умолчанию Цельсий
-
-//    public String getAddress(double lats, double lons) {
-//        Geocoder geocoder;
-//        double lat = lats;
-//        double lon = lons;
-//        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-//        List<Address> addresses = null;
-//        try {
-//            addresses = geocoder.getFromLocation(lat, lon, 1);
-//        } catch (IOException e) {
-//
-//            e.printStackTrace();
-//        }
-//
-//        if (addresses != null) {
-//
-//            String address = addresses.get(0).getAddressLine(0);
-//            String city = addresses.get(0).getLocality();
-//            String state = addresses.get(0).getAdminArea();
-//            String country = addresses.get(0).getCountryName();
-//            String postalCode = addresses.get(0).getPostalCode();
-//            String knownName = addresses.get(0).getFeatureName();
-//
-//            return address;
-//        } else {
-//            return "failed";
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,20 +61,21 @@ public class MainActivity extends AppCompatActivity {
         tvPlace = findViewById(R.id.textViewPlace);
         SettingsButton = findViewById(R.id.imageButton2);
         RefreshButton = findViewById(R.id.imageButton);
-        //last_lat = location.getLatitude();
-        //last_lng = location.getLongitude();
-
-        //CityPreference cityPreference = new CityPreference(?);
-        //tvPlace.setText(cityPreference.getCity());
+        cityPreference = new CityPreference(this);
+        tvPlace.setText(cityPreference.getCity());
 
         LocationManager lm = (LocationManager)this. getSystemService(context.LOCATION_SERVICE);
         while(true)
         if ( ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Permission has already been granted
             loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
-            if(loc != null){
+            if (loc != null) {//смог определить геолокацию - возьмем новые данные
+                getLocation();
+            } else {//не смог получить gps данные - используем старые
+                latitude = Double.valueOf(cityPreference.getLatitude());
+                longitude = Double.valueOf(cityPreference.getLongitude());
                 getLocation();
             }
             break;
@@ -166,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             getLocation();
+            cityPreference.setLatitude(Double.toString(latitude));
+            cityPreference.setLongitude(Double.toString(longitude));
         }
 
         @Override
@@ -182,17 +157,16 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void getLocation() {
-        //String Location = getAddress(loc.getLatitude(),loc.getLongitude());
         try {
             Geocoder geo = new Geocoder(this.getApplicationContext(), Locale.getDefault());
-            List<Address> addresses = geo.getFromLocation(loc.getLatitude(),loc.getLongitude(), 1);
+            List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
             if (addresses.isEmpty()) {
                 tvPlace.setText("Waiting for Location");
             }
             else {
                 if (addresses.size() > 0) {
                     tvPlace.setText(addresses.get(0).getLocality() + ", " + addresses.get(0).getCountryName());
-                    locationForEPI = addresses.get(0).getFeatureName() + ", " + addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName();
+                    cityPreference.setCity(addresses.get(0).getLocality() +", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName());
                 }
             }
         }
@@ -228,9 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 if(json == null){
                     handler.post(new Runnable(){
                         public void run(){
-                            Toast.makeText(getApplicationContext(),
-                                    getApplicationContext().getString(R.string.place_not_found),
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.place_not_found), Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
@@ -252,18 +224,43 @@ public class MainActivity extends AppCompatActivity {
                 localTempStyle = " ℃";
             else localTempStyle = " 36.6\\\\u00B2\" + \"F";
 
-            tvPlace.setText(json.getString("name").toUpperCase(Locale.getDefault()) +
-                    ", " +
-                    json.getJSONObject("sys").getString("country"));
+            tvPlace.setText(json.getString("name").toUpperCase(Locale.getDefault()) + ", " + json.getJSONObject("sys").getString("country"));
 
             JSONObject details = json.getJSONArray("weather").getJSONObject(0);
             JSONObject main = json.getJSONObject("main");
-            (temp1).setText(
-                    String.format("%.2f", main.getDouble("temp")) + localTempStyle);
+            (temp1).setText(String.format("%.2f", main.getDouble("temp")) + localTempStyle);
 
         }catch(Exception e){
             Log.e("SimpleWeather", "One or more fields not found in the JSON data");
         }
     }
 
+//    private void setWeatherIcon(int actualId, long sunrise, long sunset){
+//        int id = actualId / 100;
+//        String icon = "";
+//        if(actualId == 800){
+//            long currentTime = new Date().getTime();
+//            if(currentTime>=sunrise && currentTime<sunset) {
+//                icon = getActivity().getString(R.string.weather_sunny);
+//            } else {
+//                icon = getActivity().getString(R.string.weather_clear_night);
+//            }
+//        } else {
+//            switch(id) {
+//                case 2 : icon = getActivity().getString(R.string.weather_thunder);
+//                    break;
+//                case 3 : icon = getActivity().getString(R.string.weather_drizzle);
+//                    break;
+//                case 7 : icon = getActivity().getString(R.string.weather_foggy);
+//                    break;
+//                case 8 : icon = getActivity().getString(R.string.weather_cloudy);
+//                    break;
+//                case 6 : icon = getActivity().getString(R.string.weather_snowy);
+//                    break;
+//                case 5 : icon = getActivity().getString(R.string.weather_rainy);
+//                    break;
+//            }
+//        }
+//        weatherIcon.setText(icon);
+//    }
 }

@@ -10,8 +10,8 @@
     <TextView
         android:id="@+id/textView1"
         android:layout_width="180dp"
-        android:layout_height="215dp"
-        android:text="Weather is:"
+        android:layout_height="221dp"
+        android:layout_marginBottom="35dp"
         android:textColor="#363535"
         android:textSize="20sp"
         android:visibility="visible"
@@ -25,10 +25,10 @@
     <ImageButton
         android:id="@+id/imageButton"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="45dp"
-        android:layout_height="43dp"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
         android:layout_gravity="center"
-        android:background="#A1D5FF"
+        android:background="@null"
         android:contentDescription="@string/app_name"
         android:onClick="onImButtonRefresh"
         android:scaleType="fitXY"
@@ -36,25 +36,27 @@
         android:state_pressed="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.049" />
+        app:layout_constraintVertical_bias="0.03" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="193dp"
+        android:layout_width="178dp"
         android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:gravity="center"
         android:text="Hourly forecast:"
         android:textColor="@color/design_default_color_primary_dark"
-        android:textSize="23dp"
+        android:textSize="21dp"
         android:textStyle="bold"
         android:typeface="serif"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="10.74"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />/>
+        app:layout_constraintVertical_bias="0.419" />/>
 
     <ImageButton
         android:id="@+id/imageButton2"
@@ -62,7 +64,7 @@
         android:layout_width="66dp"
         android:layout_height="66dp"
         android:layout_gravity="center"
-        android:background="#A1D5FF"
+        android:background="@null"
         android:contentDescription="@string/app_name"
         android:onClick="onImButtonSettingsClick"
         android:scaleType="fitXY"
@@ -104,7 +106,7 @@
 
         <TextView
             android:id="@+id/textViewPlace"
-            android:layout_width="51dp"
+            android:layout_width="140dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:gravity="center"
@@ -112,11 +114,11 @@
             android:textSize="20dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="14dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
             android:text="Places"
+            android:gravity="center"
             android:textSize="25dp" />
 
     </LinearLayout>
@@ -332,6 +334,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="177dp"
+        android:layout_height="191dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="217dp"
+        android:layout_marginRight="217dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:srcCompat="?attr/selectableItemBackground" />
 
 
 </android.support.constraint.ConstraintLayout>
