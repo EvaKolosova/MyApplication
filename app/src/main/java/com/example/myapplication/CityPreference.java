@@ -11,7 +11,8 @@ public class CityPreference {
 
     // If the user has not chosen a city yet, return
     // Sydney as the default city
-    String getCity(){ return prefs.getString("city", "Nizhny Novgorod, Nizhny Novgorod Oblast, Russia"); }
+    String getCity(){ return prefs.getString("city", "NIZHNY NOVGOROD"); }
+        //return prefs.getString("city", "Nizhny Novgorod, Nizhny Novgorod Oblast, Russia"); }
 
     String getLatitude(){ return prefs.getString("latitude", "56.326887"); }
 
@@ -19,9 +20,7 @@ public class CityPreference {
         return prefs.getString("longitude", "44.005986");
     }
 
-    void setCity(String city){
-        prefs.edit().putString("city", city).commit();
-    }
+    void setCity(String city){ prefs.edit().putString("city", city).commit(); }
 
     void setLatitude(String latitude){ prefs.edit().putString("latitude", latitude).commit(); }
 

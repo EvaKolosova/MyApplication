@@ -12,15 +12,17 @@ import com.example.myapplication.R;
 
 public class FetchWeather {
     private static final String OPEN_WEATHER_MAP_API =
-            "http://api.openweathermap.org/data/2.5/weather?q=%s&units=";//=metric
-    public static JSONObject getJSON(Context context, String city, String metric){
+            "http://api.openweathermap.org/data/2.5/weather?lat=";//=metric
+    public static JSONObject getJSON(Context context, double latitude, double longitude, String metric){
         try {
-            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + metric, city));
+            //URL url = new URL(String.format(OPEN_WEATHER_MAP_API + metric, city));
+            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + latitude + "&lon=" + longitude + "&APPID=9e40f60b1a789c789a21fb9e6e5f1d01&units=" + metric));
+            //http://api.openweathermap.org/data/2.5/weather?lat=56.326887&lon=44.005986&APPID=9e40f60b1a789c789a21fb9e6e5f1d01&units=metric
 
             HttpURLConnection connection =
                     (HttpURLConnection)url.openConnection();
-            connection.setRequestProperty("x-api-key",
-                    context.getString(R.string.open_weather_maps_app_id));
+            //connection.setRequestProperty("x-api-key",
+                    //context.getString(R.string.open_weather_maps_app_id));
 
 
             BufferedReader reader = new BufferedReader(
