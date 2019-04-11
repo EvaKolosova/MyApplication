@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     private void renderWeather(JSONObject json){//РИСУНОК УЧИТЫВАЙ!
         try {
             String localTempStyle;
-            if(tempStyle == "metric")
+            if(tempStyle.equals("metric"))
                 localTempStyle = " ℃";
             else localTempStyle = " °F";
 

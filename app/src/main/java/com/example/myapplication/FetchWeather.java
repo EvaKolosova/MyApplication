@@ -1,5 +1,7 @@
 package com.example.myapplication;//класс отвечает за получение данных о погоде через API OpenWeatherMap.
 import android.content.Context;
+import android.content.res.Resources;
+
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,24 +18,24 @@ public class FetchWeather {
     public static JSONObject getJSON(Context context, double latitude, double longitude, String metric){
         try {
             //URL url = new URL(String.format(OPEN_WEATHER_MAP_API + metric, city));
-            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + latitude + "&lon=" + longitude + "&APPID=9e40f60b1a789c789a21fb9e6e5f1d01&units=" + metric));
-            //http://api.openweathermap.org/data/2.5/weather?lat=56.326887&lon=44.005986&APPID=9e40f60b1a789c789a21fb9e6e5f1d01&units=metric
+            Resources res = Resources.getSystem();
+            res.getString(R.string.open_weather_maps_app_id);
+            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + latitude + "&lon=" + longitude + "&APPID=" + res + "&units=" + metric));
 
             HttpURLConnection connection =
                     (HttpURLConnection)url.openConnection();
-            //connection.setRequestProperty("x-api-key",
-                    //context.getString(R.string.open_weather_maps_app_id));
-
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             if (reader == null)
-                System.out.println("Testing null!!!");
+                return null;//написать в logcat
             StringBuilder json = new StringBuilder(1024);
             String tmp;
             while((tmp=reader.readLine())!=null)
                 json.append(tmp).append("\n");
             reader.close();
+
+            connection.disconnect();
 
             JSONObject data = new JSONObject(json.toString());
 

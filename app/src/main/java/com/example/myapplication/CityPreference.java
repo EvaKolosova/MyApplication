@@ -20,9 +20,9 @@ public class CityPreference {
         return prefs.getString("longitude", "44.005986");
     }
 
-    void setCity(String city){ prefs.edit().putString("city", city).commit(); }
+    void setCity(String city){ prefs.edit().putString("city", city).apply(); }
 
-    void setLatitude(String latitude){ prefs.edit().putString("latitude", latitude).commit(); }
+    void setLatitude(String latitude){ prefs.edit().putString("latitude", latitude).apply(); }
 
-    void setLongitude(String longitude){ prefs.edit().putString("longitude", longitude).commit(); }
+    void setLongitude(String longitude){ prefs.edit().putString("longitude", longitude).apply(); }
 }
