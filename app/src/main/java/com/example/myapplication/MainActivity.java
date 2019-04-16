@@ -1,9 +1,16 @@
 package com.example.myapplication;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Icon;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +27,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
@@ -32,20 +40,29 @@ import java.util.List;
 import java.lang.Thread;
 import android.location.LocationManager;
 
+import com.google.gson.Gson;
+
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ACCESS = 0;
+    private static final String TAG = "WEATHER";
 
-    ImageButton SettingsButton, RefreshButton;
-    TextView tvPlace, tvPlaces;
-    AlertDialog.Builder ad;
-    Context context;
-    Location loc = null;
-    double latitude, longitude;//for changed place
-    CityPreference cityPreference;//at begin for default settings
-    Handler handler;
-    TextView tempToday, temp1, temp2, temp3, temp4, temp5, temp6;
-    TextView today, day1, day2, day3, day4, day5, day6;
-    String tempStyle = "metric";//по умолчанию Цельсий
+    protected ImageButton SettingsButton, RefreshButton;
+    protected TextView tvPlace, tvPlaces;
+    protected AlertDialog.Builder ad;
+    protected Context context;
+    protected Location loc = null;
+    protected double latitude, longitude;//for changed place
+    protected CityPreference cityPreference;//at begin for default settings
+    protected Handler handler;
+    protected ImageView iconToday;
+    protected TextView tempToday, temp1, temp2, temp3, temp4, temp5, temp6;
+    protected TextView today, day1, day2, day3, day4, day5, day6;
+    protected ImageView icon1, icon2, icon3, icon4, icon5, icon6;
+    protected String tempStyle = "metric";//по умолчанию Цельсий
+    protected WeatherAPI.ApiInterface api;
+    protected int iconType;
+    protected long sunrise;
+    protected long sunset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +77,19 @@ public class MainActivity extends AppCompatActivity {
         temp4 = findViewById(R.id.textView16);
         temp5 = findViewById(R.id.textView19);
         temp6 = findViewById(R.id.textView22);
-        today = findViewById(R.id.textView1);
+        iconToday = findViewById(R.id.imageView2);
         day1 = findViewById(R.id.textView5);
         day2 = findViewById(R.id.textView8);
         day3 = findViewById(R.id.textView11);
         day4 = findViewById(R.id.textView14);
         day5 = findViewById(R.id.textView17);
         day6 = findViewById(R.id.textView20);
+        icon1 = findViewById(R.id.iVIcon1);
+        icon2 = findViewById(R.id.iVIcon2);
+        icon3 = findViewById(R.id.iVIcon3);
+        icon4 = findViewById(R.id.iVIcon4);
+        icon5 = findViewById(R.id.iVIcon5);
+        icon6 = findViewById(R.id.iVIcon6);
 
         //временно
         day1.setText("+1");
@@ -83,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
         cityPreference = new CityPreference(this);
         tvPlace.setText(cityPreference.getCity());
 
-        LocationManager lm = (LocationManager)this. getSystemService(context.LOCATION_SERVICE);
+        api = WeatherAPI.getClient().create(WeatherAPI.ApiInterface.class);
+
+        LocationManager lm = (LocationManager) this.getSystemService(context.LOCATION_SERVICE);
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -137,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SettingsButton.setOnClickListener(new View.OnClickListener(){
+        SettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ad.show();
@@ -147,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateWeatherData(tvPlace.getText().toString());
+
+
+                getWeather(day1, icon1, temp1);
             }
         });
         tvPlaces.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private final LocationListener locationListener = new LocationListener()  {
+    private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
@@ -190,26 +218,24 @@ public class MainActivity extends AppCompatActivity {
             List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
             if (addresses.isEmpty()) {
                 tvPlace.setText("Waiting for Location");
-            }
-            else {
+            } else {
                 if (addresses.size() > 0) {
                     tvPlace.setText(addresses.get(0).getLocality()); //+ ", " + addresses.get(0).getCountryName());
                     cityPreference.setCity(addresses.get(0).getLocality());// + ", " + addresses.get(0).getCountryName());//+", " + addresses.get(0).getAdminArea());
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(); // getFromLocation() may sometimes fail
         }
     }
 
     public void requestMultiplePermissions() {
         ActivityCompat.requestPermissions(this,
-                new String[] {
+                new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
-                },REQUEST_ACCESS
-                );
+                }, REQUEST_ACCESS
+        );
     }
 
     @Override
@@ -223,21 +249,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateWeatherData(final String city){
-        new Thread(){
+    private void updateWeatherData(final String city) {
+        new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 final JSONObject json = FetchWeather.getJSON(getApplicationContext(), latitude, longitude, tempStyle);
-                if(json == null){
-                    handler.post(new Runnable(){
-                        public void run(){
+                if (json == null) {
+                    handler.post(new Runnable() {
+                        public void run() {
                             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.place_not_found), Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
-                    handler.post(new Runnable(){
+                    handler.post(new Runnable() {
                         @Override
-                        public void run(){
+                        public void run() {
                             renderWeather(json);
                         }
                     });
@@ -246,10 +272,10 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    private void renderWeather(JSONObject json){//РИСУНОК УЧИТЫВАЙ!
+    private void renderWeather(JSONObject json) {//РИСУНОК УЧИТЫВАЙ!
         try {
             String localTempStyle;
-            if(tempStyle.equals("metric"))
+            if (tempStyle.equals("metric"))
                 localTempStyle = " ℃";
             else localTempStyle = " °F";
 
@@ -258,8 +284,12 @@ public class MainActivity extends AppCompatActivity {
             JSONObject details = json.getJSONArray("weather").getJSONObject(0);
             JSONObject main = json.getJSONObject("main");
 
-            String TodayIconType = details.getString("icon") + "\n";//Icon
-            String TodayTemp =  String.format("%.2f", main.getDouble("temp"))+ localTempStyle + "\n";
+            iconType = Integer.parseInt(details.getString("icon"));
+            JSONObject detailsTodaySunTime = json.getJSONObject("sys");
+            sunrise = Long.parseLong(String.format("%d", detailsTodaySunTime.getInt("sunrise")));
+            sunset = Long.parseLong(String.format("%d", detailsTodaySunTime.getInt("sunset")));
+
+            String TodayTemp = String.format("%.2f", main.getDouble("temp")) + localTempStyle + "\n";
 
             String TodayBigString = details.getString("description").toUpperCase(Locale.US) +
                     "\n" + "Humidity: " + main.getString("humidity") + "%" +
@@ -272,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject detailsTodayWind = json.getJSONObject("wind");
             String TodayWind = "Wind: " + String.format("%d", detailsTodayWind.getInt("speed")) + "\n";//Wind
 
-            String Today = "Today temperature is: " + TodayTemp + TodayWind + TodayBigString  + "\n" + InfoStr;
+            String Today = "Today temperature is: " + TodayTemp + TodayWind + TodayBigString + "\n" + InfoStr;
             (tempToday).setText(Today);
 
 //            JSONObject detailsTodayDescrip = json.getJSONArray("weather").getJSONObject(0);
@@ -283,49 +313,112 @@ public class MainActivity extends AppCompatActivity {
             //(temp1).setText(TodayTemp);
 
 
-
-
-
-
-
-
-
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("SimpleWeather", "One or more fields not found in the JSON data");
         }
     }
 
+    public void getWeather(final TextView tvData, final ImageView ivIcon, final TextView tvTemp) {
+        Log.d(TAG, "OK");
 
-//    private void setWeatherIcon(int actualId, long sunrise, long sunset){
-//        int id = actualId / 100;
-//        String icon = "";
-//        if(actualId == 800){
-//            long currentTime = new Date().getTime();
-//            if(currentTime>=sunrise && currentTime<sunset) {
-//                icon = this.getString(R.string.weather_sunny);
-//            } else {
-//                icon = this.getString(R.string.weather_clear_night);
+        // get weather for today
+        Call<WeatherDay> callToday = api.getToday(latitude, longitude, tempStyle, getString(R.string.open_weather_maps_app_id));
+        callToday.enqueue(new Callback<WeatherDay>() {
+            @Override
+            public void onResponse(Call<WeatherDay> call, Response<WeatherDay> response) {
+                Log.e(TAG, "onResponse");
+                WeatherDay data = response.body();
+                Log.d(TAG,response.body().toString());
+
+                if (response.isSuccessful()) {
+                    tvTemp.setText(data.getTempInteger());
+                    tvData.setText(data.getDate().toString());
+                    setWeatherIcon(iconType, sunrise, sunset, ivIcon);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherDay> call, Throwable t) {
+                Log.e(TAG, "onFailure");
+                Log.e(TAG, t.toString());
+            }
+        });
+
+        // get weather forecast
+//        Call<WeatherWeekForecast> callForecast = api.getForecast(latitude, longitude, tempStyle, context.getString(R.string.open_weather_maps_app_id));
+//        callForecast.enqueue(new Callback<WeatherWeekForecast>() {
+//            @Override
+//            public void onResponse(Call<WeatherWeekForecast> call, Response<WeatherWeekForecast> response) {
+//                Log.e(TAG, "onResponse");
+//                WeatherWeekForecast data = response.body();
+//
+//                if (response.isSuccessful()) {
+//                    SimpleDateFormat formatDayOfWeek = new SimpleDateFormat("E");
+//
+//                    for (WeatherDay day : data.getItems()) {
+//                        if (day.getDate().get(Calendar.HOUR_OF_DAY) == 15) {
+//                            String date = String.format("%d.%d.%d %d:%d",
+//                                    day.getDate().get(Calendar.DAY_OF_MONTH),
+//                                    day.getDate().get(Calendar.WEEK_OF_MONTH),
+//                                    day.getDate().get(Calendar.YEAR),
+//                                    day.getDate().get(Calendar.HOUR_OF_DAY),
+//                                    day.getDate().get(Calendar.MINUTE)
+//                            );
+//                            Log.d(TAG, date);
+//                            Log.d(TAG, day.getTempInteger());
+//                            Log.d(TAG, "---");
+//
+//                            // show day of week
+//                            String dayOfWeek = formatDayOfWeek.format(day.getDate().getTime());
+//                            tvData.setText(dayOfWeek);
+//                            setWeatherIcon(iconType, sunrise, sunset, ivIcon);
+//                            tvTemp.setText(day.getTempWithDegree());
+//                        }
+//                    }
+//                }
 //            }
-//        } else {
-//            switch(id) {
-//                case 2 : icon = this.getString(R.string.weather_thunder);
-//                    break;
-//                case 3 : icon = this.getString(R.string.weather_drizzle);
-//                    break;
-//                case 7 : icon = this.getString(R.string.weather_foggy);
-//                    break;
-//                case 8 : icon = this.getString(R.string.weather_cloudy);
-//                    break;
-//                case 6 : icon = this.getString(R.string.weather_snowy);
-//                    break;
-//                case 5 : icon = this.getString(R.string.weather_rainy);
-//                    break;
+//
+//            @Override
+//            public void onFailure(Call<WeatherWeekForecast> call, Throwable t) {
+//                Log.e(TAG, "onFailure");
+//                Log.e(TAG, t.toString());
 //            }
-//        }
-//        weatherIcon.setText(icon);
-//    }
+//        });
+    }
 
-
+    private void setWeatherIcon(int actualId, long sunrise, long sunset, ImageView iv) {
+        int id = actualId / 100;
+        if (actualId == 800) {
+            long currentTime = new Date().getTime();
+            if (currentTime >= sunrise && currentTime < sunset) {
+                iv.setImageResource(R.drawable.weather_sunny);
+            } else {
+                iv.setImageResource(R.drawable.weather_clear_night);
+            }
+        } else {
+            switch (id) {
+                case 2:
+                    iv.setImageResource(R.drawable.weather_thunder);
+                    break;
+                case 3:
+                    iv.setImageResource(R.drawable.weather_drizzle);
+                    break;
+                case 7:
+                    iv.setImageResource(R.drawable.weather_foggy);
+                    break;
+                case 8:
+                    iv.setImageResource(R.drawable.weather_cloudy);
+                    break;
+                case 6:
+                    iv.setImageResource(R.drawable.weather_snowy);
+                    break;
+                case 5:
+                    iv.setImageResource(R.drawable.weather_rainy);
+                    break;
+            }
+        }
+    }
+}
 //    private String getTodayDateInStringFormat(){
 //        Calendar c = Calendar.getInstance();
 //        SimpleDateFormat df = new SimpleDateFormat("E, d MMMM", Locale.getDefault());
@@ -346,5 +439,3 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        return days;
 //    }
-
-}

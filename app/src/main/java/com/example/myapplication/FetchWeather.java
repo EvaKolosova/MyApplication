@@ -15,12 +15,10 @@ import com.example.myapplication.R;
 public class FetchWeather {
     private static final String OPEN_WEATHER_MAP_API =
             "http://api.openweathermap.org/data/2.5/weather?lat=";//=metric
+
     public static JSONObject getJSON(Context context, double latitude, double longitude, String metric){
         try {
-            //URL url = new URL(String.format(OPEN_WEATHER_MAP_API + metric, city));
-            Resources res = Resources.getSystem();
-            res.getString(R.string.open_weather_maps_app_id);
-            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + latitude + "&lon=" + longitude + "&APPID=" + res + "&units=" + metric));
+            URL url = new URL(String.format(OPEN_WEATHER_MAP_API + latitude + "&lon=" + longitude + "&APPID=" + context.getString(R.string.open_weather_maps_app_id) + "&units=" + metric));
 
             HttpURLConnection connection =
                     (HttpURLConnection)url.openConnection();

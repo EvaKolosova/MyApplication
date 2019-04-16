@@ -169,10 +169,11 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView6"
+            <ImageView
+                android:id="@+id/iVIcon1"
                 android:layout_width="163dp"
-                android:gravity="center"></TextView>
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView7"
@@ -194,9 +195,10 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView9"
-                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/iVIcon2"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView10"
@@ -217,9 +219,10 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView12"
-                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/iVIcon3"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView13"
@@ -240,9 +243,10 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView15"
-                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/iVIcon4"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView16"
@@ -263,9 +267,10 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView18"
-                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/iVIcon5"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView19"
@@ -287,9 +292,10 @@
                 android:textColor="#193697"
                 android:textSize="18dp"></TextView>
 
-            <TextView
-                android:id="@+id/textView21"
-                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/iVIcon6"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
 
             <TextView
                 android:id="@+id/textView22"
