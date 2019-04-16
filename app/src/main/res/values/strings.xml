@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">My Application</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open_weather_maps_app_id">9e40f60b1a789c789a21fb9e6e5f1d01</string>
+    <string name="place_not_found">Sorry, no weather data found.</string>
 </resources>

@@ -1,35 +1,336 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sample.foo.simplegeocodeapp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#6F0049FF">
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:id="@+id/textView1"
+        android:layout_width="209dp"
+        android:layout_height="155dp"
+        android:layout_marginTop="8dp"
+        android:textColor="#293DA2"
+        android:textSize="15sp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.92"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintRight_toRightOf="@id/tableLayout1"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton"
+        app:layout_constraintVertical_bias="0.026" />
 
     <ImageButton
+        android:id="@+id/imageButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_gravity="center"
+        android:background="@null"
         android:contentDescription="@string/app_name"
+        android:onClick="onImButtonRefresh"
+        android:scaleType="fitXY"
+        android:src="@drawable/refreshbutton"
+        android:state_pressed="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <ImageButton
         android:id="@+id/imageButton2"
-        android:layout_width="51dp"
-        android:layout_height="51dp"
-        android:layout_gravity="top"
-        android:layout_marginEnd="45dp"
-        android:layout_marginRight="45dp"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_gravity="center"
+        android:background="@null"
+        android:contentDescription="@string/app_name"
+        android:onClick="onImButtonSettingsClick"
         android:scaleType="fitXY"
         android:src="@drawable/settingbutton"
         android:state_pressed="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.953"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.125" />
+        app:layout_constraintVertical_bias="0.03" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/rainbow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tableLayout1">
+
+        <TextView
+            android:id="@+id/tvPlace"
+            android:layout_width="209dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/tvPlaces"
+            android:layout_width="46dp"
+            android:layout_height="53dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center|center_horizontal"
+            android:onClick="onImViewPlaceClick"
+            android:text="Places "
+            android:textSize="21dp" />
+
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:shrinkColumns="*"
+        android:stretchColumns="*"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView1">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:minHeight="10dp">
+
+            <TextView
+                android:id="@+id/TextView2"
+                android:layout_gravity="center"
+                android:text="Day"
+                android:textColor="@color/colorPrimary"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:typeface="serif"></TextView>
+
+            <TextView
+                android:id="@+id/TextView3"
+                android:layout_gravity="center"
+                android:text="Weather"
+                android:textColor="@color/colorPrimary"
+                android:textSize="21dp"
+                android:textStyle="bold"
+                android:typeface="serif"></TextView>
+
+            <TextView
+                android:id="@+id/TextView4"
+                android:layout_gravity="center"
+                android:text="°T"
+                android:textColor="@color/colorPrimary"
+                android:textSize="21dp"
+                android:textStyle="bold"
+                android:typeface="serif"></TextView>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="47dp">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon1"
+                android:layout_width="163dp"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView7"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="72dp"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon2"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView10"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView11"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon3"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView13"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView14"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon4"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView16"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView17"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon5"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView19"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+            <ImageView
+                android:id="@+id/iVIcon6"
+                android:layout_height="match_parent"
+                android:gravity="center"></ImageView>
+
+            <TextView
+                android:id="@+id/textView22"
+                android:gravity="center"
+                android:textColor="#193697"
+                android:textSize="18dp"></TextView>
+
+        </TableRow>
+
+    </TableLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="163dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="240dp"
+        android:layout_marginRight="240dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </android.support.constraint.ConstraintLayout>
